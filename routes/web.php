@@ -7,7 +7,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\SiswaLoginController;
 use App\Http\Controllers\Auth\ParentLoginController;
 use App\Http\Controllers\Auth\WaliKelasLoginController;
-use App\Http\Controllers\Auth\OrangTuaRegisterController;
+use App\Http\Controllers\Auth\ParentRegisterController;
 use App\Http\Controllers\Auth\WaliKelasRegisterController;
 use App\Http\Controllers\Auth\RegisterSiswaController;
 use App\Http\Controllers\Siswa\SiswaController;
@@ -58,30 +58,29 @@ Route::prefix('siswa')->name('siswa.')->group(function () {
 // ============================================================
 // ==================== ORANG TUA =============================
 // ============================================================
-Route::prefix('orangtua')->name('orangtua.')->group(function () {
+Route::prefix('parent')->name('parent.')->group(function () {
     // LOGIN & LOGOUT
     Route::get('/login', [ParentLoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [ParentLoginController::class, 'login'])->name('login.submit');
     Route::post('/logout', [ParentLoginController::class, 'logout'])->name('logout');
 
     // REGISTER
-    Route::get('/register', [OrangTuaRegisterController::class, 'showRegisterForm'])->name('register');
-    Route::post('/register', [OrangTuaRegisterController::class, 'store'])->name('register.store');
+    Route::get('/register', [ParentRegisterController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [ParentRegisterController::class, 'store'])->name('register.store');
 
-    // DASHBOARD & IZIN
-    Route::middleware('auth:orangtua')->group(function () { // ✅ cocok dengan guard 'orangtua'
+    // DASHBOARD & IZIN (PASTIKAN GUARD = ORANGTUA)
+   Route::middleware('auth:parent')->group(function () {
         Route::get('/dashboard', [OrangTuaController::class, 'index'])->name('dashboard');
         Route::get('/izin/create/{siswa}', [OrangTuaController::class, 'createIzin'])->name('izin.create');
         Route::post('/izin/store', [OrangTuaController::class, 'storeIzin'])->name('izin.store');
     });
 });
-
-
 // ============================================================
 // ==================== WALI KELAS ============================
 // ============================================================
+
 Route::prefix('walikelas')->name('walikelas.')->group(function () {
-    // LOGIN & LOGOUT
+     // LOGIN & LOGOUT
     Route::get('/login', [WaliKelasLoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [WaliKelasLoginController::class, 'login'])->name('login.submit');
     Route::post('/logout', [WaliKelasLoginController::class, 'logout'])->name('logout');
@@ -90,12 +89,13 @@ Route::prefix('walikelas')->name('walikelas.')->group(function () {
     Route::get('/register', [WaliKelasRegisterController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [WaliKelasRegisterController::class, 'store'])->name('register.store');
 
+
     // DASHBOARD & IZIN
     Route::middleware('auth:walikelas')->group(function () {
         Route::get('/dashboard', [WaliKelasController::class, 'dashboard'])->name('dashboard');
         Route::get('/profil', [WaliKelasController::class, 'profil'])->name('profil');
-        Route::get('/izin', [WaliKelasIzinController::class, 'index'])->name('izin.index');
-        Route::post('/izin/{id}', [WaliKelasIzinController::class, 'update'])->name('izin.update');
+        Route::get('/izin', [WaliKelasController::class, 'izinIndex'])->name('izin.index');
+        Route::post('/izin/{id}/update', [WaliKelasController::class, 'updateIzin'])->name('izin.update');
     });
 });
 

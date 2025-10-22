@@ -18,7 +18,7 @@ class SiswaController extends Controller
     // Dashboard utama siswa
     public function dashboard()
     {
-        $siswa = Auth::user()->siswa; // ambil data siswa terkait user
+        $siswa = Auth::guard('siswa')->user(); // ambil data siswa terkait user
 
         // Ambil seluruh izin yang diajukan oleh orang tua untuk siswa ini
         $izinList = Izin::where('siswa_id', $siswa->id)
@@ -35,9 +35,10 @@ class SiswaController extends Controller
         $siswa = Auth::user()->siswa;
 
         $izinList = Izin::where('siswa_id', $siswa->id)
-        ->with('waliKelas')
+        ->with(['orangTua'])
         ->orderBy('created_at', 'desc')
         ->get();
+
 
 
         return view('siswa.izin', compact('siswa', 'izinList'));

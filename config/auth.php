@@ -41,15 +41,20 @@ return [
             'provider' => 'users',
         ],
 
+        //'orangtua' => [
+          //  'driver' => 'session',
+            //'provider' => 'orangtuas',
+        //],
+
 
         'siswa' => [
             'driver' => 'session',
             'provider' => 'siswas',
         ],
 
-        'orangtua' => [ // 👈 pastikan ini ada
+       'parent' => [
         'driver' => 'session',
-        'provider' => 'orangtuas',
+        'provider' => 'parents',
     ],
 
         'walikelas' => [
@@ -82,14 +87,19 @@ return [
         ],
 
 
-        'siswas' => [
-        'driver' => 'eloquent',
-        'model' => App\Models\Siswa::class, // pakai model Siswa
-    ],
+       // 'orangtuas' => [
+         //   'driver' => 'eloquent',
+           // 'model' => App\Models\OrangTua::class,
+        //],
 
-        'orangtuas' => [ // 👈 perhatikan nama provider ini
+        'siswas' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Siswa::class, // pakai model Siswa
+        ],
+
+       'parents' => [
         'driver' => 'eloquent',
-        'model' => App\Models\OrangTua::class, // kita buat model ini di bawah
+        'model' => App\Models\OrangTua::class,// atau App\Models\Parent::class kalau kamu buat model khusus
     ],
 
     'walikelas' => [

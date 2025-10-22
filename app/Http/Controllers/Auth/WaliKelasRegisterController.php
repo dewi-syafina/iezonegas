@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
-class WaliRegisterController extends Controller
+class WaliKelasRegisterController extends Controller
 {
 
     // Tambahkan method create() supaya Breeze tidak error

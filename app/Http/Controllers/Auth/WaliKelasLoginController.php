@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class WaliLoginController extends Controller
+class WaliKelasLoginController extends Controller
 {
     public function showLoginForm()
     {
@@ -16,13 +16,14 @@ class WaliLoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:walis,email',
-            'password' => 'required',
-        ]);
+        'email' => 'required|email|exists:wali_kelas,email',
+        'password' => 'required',
+    ]);
 
         if (Auth::guard('walikelas')->attempt($request->only('email', 'password'))) {
             $request->session()->regenerate();
-            return redirect()->route('wali.dashboard');
+            return redirect()->route('walikelas.dashboard');
+
         }
 
         return back()->withErrors(['email' => 'Email atau password salah']);

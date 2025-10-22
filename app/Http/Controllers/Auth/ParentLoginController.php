@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\OrangTua;
 
 class ParentLoginController extends Controller
 {
@@ -16,28 +17,35 @@ class ParentLoginController extends Controller
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email|exists:orangtuas,email',
+            'email' => 'required|email',
             'password' => 'required',
         ]);
 
-        // ✅ Gunakan guard 'orangtua'
-        if (Auth::guard('orangtua')->attempt($request->only('email', 'password'))) {
-            $request->session()->regenerate();
-            return redirect()->route('orangtua.dashboard');
+        // ✅ Cek dulu apakah email terdaftar
+        $parent = OrangTua::where('email', $request->email)->first();
+        if (!$parent) {
+            return back()
+                ->withErrors(['email' => 'Email tidak ditemukan'])
+                ->withInput($request->only('email'));
         }
 
-        return back()->withErrors(['email' => 'Email atau password salah']);
+        // ✅ Kalau email benar, cek password
+        if (!Auth::guard('parent')->attempt($request->only('email', 'password'))) {
+            return back()
+                ->withErrors(['password' => 'Password salah'])
+                ->withInput($request->only('email'));
+        }
+
+        // ✅ Login sukses
+        $request->session()->regenerate();
+        return redirect()->route('parent.dashboard');
     }
 
     public function logout(Request $request)
     {
-        // ✅ Ganti 'parent' ke 'orangtua'
-        Auth::guard('orangtua')->logout();
-
+        Auth::guard('parent')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
-        // ✅ Ganti route redirect-nya juga
-        return redirect()->route('orangtua.login');
+        return redirect()->route('parent.login');
     }
 }

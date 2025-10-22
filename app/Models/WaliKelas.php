@@ -10,6 +10,13 @@ class WaliKelas extends Authenticatable
 {
     use HasApiTokens, Notifiable;
 
-    protected $fillable = ['name', 'email', 'password'];
+    protected $table = 'wali_kelas';
+
+     protected $fillable = [
+        'nama',
+        'nip',
+        'email',
+        'password',
+    ];
     protected $hidden = ['password', 'remember_token'];
 }

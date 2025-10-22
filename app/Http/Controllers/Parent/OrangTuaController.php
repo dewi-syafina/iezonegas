@@ -14,10 +14,10 @@ class OrangTuaController extends Controller
     {
         $parent = Auth::user();
 
-        // ambil data anak otomatis dari NIS
+        // Ambil anak berdasarkan NIS yang sama
         $child = Siswa::where('nis', $parent->nis_anak)->first();
 
-        // ambil semua izin anak
+        // Jika anak ditemukan, ambil izinnya
         $izins = $child
             ? Izin::where('siswa_id', $child->id)->latest()->get()
             : collect();
@@ -28,36 +28,38 @@ class OrangTuaController extends Controller
     public function createIzin($siswa_id)
     {
         $siswa = Siswa::findOrFail($siswa_id);
-        return view('parent.izin.create', compact('siswa'));
+        return view('parent.Izin.create', compact('siswa'));
     }
 
     public function storeIzin(Request $request)
     {
         $request->validate([
             'siswa_id' => 'required|exists:siswas,id',
+            'jenis_izin' => 'required|string|in:ijin,sakit,dispensasi',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'jenis_izin' => 'required|string',
-            'alasan' => 'required|string',
+            'alasan' => 'required|string|max:255',
             'bukti_foto' => 'required|image|max:2048',
         ]);
 
-        $parent = Auth::user();
-        $buktiPath = $request->file('bukti_foto')
-            ? $request->file('bukti_foto')->store('bukti', 'public')
-            : null;
 
+        $parent = Auth::user();
+
+        // Simpan bukti foto ke storage/public/bukti_izin
+        $buktiPath = $request->file('bukti_foto')->store('bukti_izin', 'public');
+
+        // Simpan data izin ke database
         Izin::create([
             'siswa_id' => $request->siswa_id,
             'parent_id' => $parent->id,
             'tanggal_mulai' => $request->tanggal_mulai,
             'tanggal_selesai' => $request->tanggal_selesai,
-            'jenis_izin' => $request->jenis_izin,
+            'jenis_izin' => $request->jenis_izin, // sudah terpisah
             'alasan' => $request->alasan,
-            'bukti_foto' =>  $path ?? null,
+            'bukti_foto' => $buktiPath,
             'status' => 'Pending',
         ]);
-
-        return redirect()->route('orangtua.dashboard')->with('success', 'Pengajuan izin berhasil dikirim.');
+        return redirect()->route('parent.dashboard')
+            ->with('success', 'Pengajuan izin berhasil dikirim dan menunggu persetujuan.');
     }
 }

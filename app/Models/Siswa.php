@@ -3,26 +3,35 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
-class Siswa extends Model
+class Siswa extends Authenticatable
 {
-    use HasFactory;
+    use HasFactory, Notifiable;
 
     protected $table = 'siswas';
-    protected $fillable = ['nama', 'nis', 'kelas', 'email', 'user_id'];
 
-    // Jika ada relasi dengan user siswa
-   public function user()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
+    protected $fillable = [
+        'wali_kelas_id',
+        'user_id',
+        'nama',
+        'nis',
+        'email',
+        'jenis_kelamin',
+        'kelas_id',
+        'parent_id',
+        'jurusan',
+        'password',
+    ];
 
+    public function waliKelas()
+    {
+        return $this->belongsTo(User::class, 'wali_kelas_id');
+    }
 
-public function izins()
-{
-    return $this->hasMany(\App\Models\Izin::class, 'siswa_id');
-}
-
-
+    public function izins()
+    {
+        return $this->hasMany(Izin::class, 'siswa_id');
+    }
 }
