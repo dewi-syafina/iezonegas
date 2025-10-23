@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
+@section('title', 'Dashboard Siswa')
 @section('content')
+
 <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-100 py-16 px-6">
     <div class="max-w-6xl mx-auto space-y-10">
 

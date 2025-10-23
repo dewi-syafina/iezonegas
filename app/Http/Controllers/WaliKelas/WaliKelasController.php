@@ -20,67 +20,63 @@ class WaliKelasController extends Controller
     {
         $wali = Auth::guard('walikelas')->user();
 
-        // Ambil semua siswa yang diawali wali_kelas_id = wali yang login
+        // Ambil semua siswa yang dibimbing wali kelas ini
         $siswaIds = Siswa::where('wali_kelas_id', $wali->id)->pluck('id');
 
-        // Ambil semua izin milik siswa yang diawalinya
+        // Ambil izin pending untuk ditampilkan
         $izinPending = Izin::whereIn('siswa_id', $siswaIds)
             ->where('status', 'pending')
             ->with(['siswa', 'orangTua'])
             ->latest()
             ->get();
 
-        $izinCount = [
-            'pending'   => Izin::whereIn('siswa_id', $siswaIds)->where('status', 'pending')->count(),
-            'disetujui' => Izin::whereIn('siswa_id', $siswaIds)->where('status', 'disetujui')->count(),
-            'ditolak'   => Izin::whereIn('siswa_id', $siswaIds)->where('status', 'ditolak')->count(),
-        ];
-
-        return view('wali.dashboard', compact('izinPending', 'izinCount'));
-    }
-
-    // 🟩 Halaman semua izin (opsional, bisa dibuat daftar penuh)
-    public function izinIndex()
-    {
-        $wali = Auth::guard('walikelas')->user();
-
-        $siswaIds = Siswa::where('wali_kelas_id', $wali->id)->pluck('id');
-
-        $izinList = Izin::whereIn('siswa_id', $siswaIds)
+        // Ambil semua izin (riwayat)
+        $izinAll = Izin::whereIn('siswa_id', $siswaIds)
             ->with(['siswa', 'orangTua'])
-            ->orderBy('created_at', 'desc')
+            ->latest()
             ->get();
 
-        return view('walikelas.izin.index', compact('izinList'));
+        // Hitung total izin berdasarkan status enum di DB
+        $izinCount = [
+            'pending'   => Izin::whereIn('siswa_id', $siswaIds)->where('status', 'pending')->count(),
+            'disetujui' => Izin::whereIn('siswa_id', $siswaIds)->where('status', 'approved')->count(),
+            'ditolak'   => Izin::whereIn('siswa_id', $siswaIds)->where('status', 'rejected')->count(),
+        ];
+
+        // Kirim semua data ke view
+        return view('wali.dashboard', compact('izinPending', 'izinAll', 'izinCount'));
     }
 
-    // 🟨 Ubah status izin (Disetujui / Ditolak)
+    // 🟨 Update status izin (disetujui / ditolak)
     public function updateIzin(Request $request, $id)
     {
         $request->validate([
-            'status' => 'required|in:approved,rejected',
-            'pesan'  => 'nullable|string|max:255'
+            'status' => 'required|in:disetujui,ditolak',
+            'pesan'  => 'nullable|string|max:255',
         ]);
-
 
         $izin = Izin::findOrFail($id);
         $wali = Auth::guard('walikelas')->user();
 
-        // pastikan izin milik siswa yang diawalinya
+        // Cek apakah izin ini benar milik siswa di bawah wali kelas ini
         if ($izin->siswa->wali_kelas_id !== $wali->id) {
             abort(403, 'Tidak diizinkan');
         }
 
-        $izin->status = $request->status;
+        // Ubah agar sesuai enum di database
+        $izin->status = $request->status === 'disetujui' ? 'approved' : 'rejected';
+        $izin->pesan_wali = $request->pesan;
         $izin->save();
 
-        return back()->with('success', 'Status izin berhasil diperbarui.');
+        // Redirect ke dashboard dengan notifikasi
+        return redirect()->route('walikelas.dashboard')
+            ->with('success', '✅ Status izin berhasil diperbarui!');
     }
 
     // 🩵 Profil wali kelas
     public function profil()
     {
         $wali = Auth::guard('walikelas')->user();
-        return view('walikelas.profil', compact('wali'));
+        return view('wali.profil', compact('wali'));
     }
 }
