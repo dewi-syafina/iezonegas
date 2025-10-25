@@ -39,12 +39,12 @@ class RegisterSiswaController extends Controller
             'nis' => $request->nis,
         ]);
 
-        Siswa::create([
-            'user_id' => $user->id,
-            'nama' => $request->name,
-            'nis' => $request->nis,
+        //<!-- Siswa::create([
+          //  'user_id' => $user->id,
+            //'nama' => $request->name,
+            //'nis' => $request->nis,
             //'email' => $request->email,
-        ]);
+        //]); -->
 
         Auth::login($user);
 

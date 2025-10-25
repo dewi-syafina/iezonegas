@@ -112,7 +112,7 @@
                 `;
             } 
             else if (role === 'wali') {
-                registerForm.action = "{{ route('wali.register.store') }}";
+                registerForm.action = "{{ route('walikelas.register.store') }}";
                 formFields.innerHTML = `
                     <input type="text" name="name" placeholder="Nama Lengkap" required>
                     <input type="text" name="nip" placeholder="NIP (Hanya untuk Register)" required>

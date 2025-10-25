@@ -87,49 +87,68 @@
             @endif
         </div>
 
-        <!-- Riwayat Semua Izin -->
-        <div class="mt-10">
-            <h2 class="text-2xl font-bold text-blue-800 mb-4">📜 Riwayat Semua Pengajuan Izin</h2>
+        <!-- 📜 Riwayat Semua Izin -->
+<div class="mt-10">
+    <h2 class="text-2xl font-bold text-blue-800 mb-4">📜 Riwayat Semua Pengajuan Izin</h2>
 
-            @if($izinAll->isEmpty())
-                <div class="bg-white shadow-md rounded-xl p-6 text-center text-gray-600">
-                    Belum ada data izin dari siswa.
-                </div>
-            @else
-                <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white rounded-xl shadow-md overflow-hidden">
-                        <thead class="bg-blue-600 text-white">
-                            <tr>
-                                <th class="py-3 px-4 text-left">Nama Siswa</th>
-                                <th class="py-3 px-4 text-left">Alasan</th>
-                                <th class="py-3 px-4 text-left">Status</th>
-                                <th class="py-3 px-4 text-left">Pesan Wali</th>
-                                <th class="py-3 px-4 text-left">Tanggal</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($izinAll as $izin)
-                                <tr class="border-b hover:bg-blue-50 transition">
-                                    <td class="py-3 px-4">{{ $izin->siswa->nama ?? '-' }}</td>
-                                    <td class="py-3 px-4">{{ $izin->alasan }}</td>
-                                    <td class="py-3 px-4">
-                                        @if($izin->status === 'approved')
-                                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">Disetujui</span>
-                                        @elseif($izin->status === 'rejected')
-                                            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">Ditolak</span>
-                                        @else
-                                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">Menunggu</span>
-                                        @endif
-                                    </td>
-                                    <td class="py-3 px-4 text-gray-600">{{ $izin->pesan_wali ?? '-' }}</td>
-                                    <td class="py-3 px-4 text-gray-500 text-sm">{{ $izin->created_at->format('d M Y, H:i') }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @endif
+    @if($izinAll->isEmpty())
+        <div class="bg-white shadow-md rounded-xl p-6 text-center text-gray-600">
+            Belum ada data izin dari siswa.
         </div>
+    @else
+        <div class="overflow-x-auto">
+            <table class="min-w-full bg-white rounded-xl shadow-md overflow-hidden">
+                <thead class="bg-blue-600 text-white">
+                    <tr>
+                        <th class="py-3 px-4 text-left">Nama Siswa</th>
+                        <th class="py-3 px-4 text-left">Alasan</th>
+                        <th class="py-3 px-4 text-left">Status</th>
+                        <th class="py-3 px-4 text-left">Pesan Wali</th>
+                        <th class="py-3 px-4 text-left">Tanggal</th>
+                        <th class="py-3 px-4 text-center">Surat</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($izinAll as $izin)
+                        <tr class="border-b hover:bg-blue-50 transition">
+                            <td class="py-3 px-4">{{ $izin->siswa->nama ?? '-' }}</td>
+                            <td class="py-3 px-4">{{ $izin->alasan }}</td>
+                            <td class="py-3 px-4">
+                                @if($izin->status === 'approved')
+                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">Disetujui</span>
+                                @elseif($izin->status === 'rejected')
+                                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">Ditolak</span>
+                                @else
+                                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">Menunggu</span>
+                                @endif
+                            </td>
+                            <td class="py-3 px-4 text-gray-600">{{ $izin->pesan_wali ?? '-' }}</td>
+                            <td class="py-3 px-4 text-gray-500 text-sm">{{ $izin->created_at->format('d M Y, H:i') }}</td>
+
+                            <!-- 🧾 Tambahan kolom untuk Surat -->
+                            <td class="py-3 px-4 text-center">
+                                @if($izin->bukti_foto)
+                                    <a href="{{ asset('storage/' . $izin->bukti_foto) }}" target="_blank" 
+                                        class="inline-flex items-center gap-1 text-blue-600 font-semibold hover:underline">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 10l4.553 4.553a2 2 0 01-2.828 2.828L12 12.828l-4.725 4.553a2 2 0 01-2.828-2.828L9 10m6 0V4m0 6l-6-6" />
+                                        </svg>
+                                        Lihat
+                                    </a>
+                                @else
+                                    <span class="text-gray-400">-</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    @endif
+</div>
+
     </div>
 </div>
 
