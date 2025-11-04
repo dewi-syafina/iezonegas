@@ -4,33 +4,28 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class OrangTua extends Authenticatable
 {
-    use HasApiTokens, Notifiable;
+    use HasFactory, Notifiable;
 
     protected $table = 'orangtuas';
 
     protected $fillable = [
         'name',
-        'nis_anak',
         'email',
         'password',
+        'nis_anak',
     ];
 
     protected $hidden = [
-        'password', 'remember_token',
+        'password',
+        'remember_token',
     ];
 
-    // relasi otomatis ke siswa berdasarkan NIS
-    public function anak()
+    public function siswas()
     {
-        return $this->hasOne(Siswa::class, 'nis', 'nis_anak');
-    }
-
-    public function izins()
-    {
-        return $this->hasMany(Izin::class, 'parent_id');
+        return $this->hasMany(Siswa::class, 'parent_id');
     }
 }

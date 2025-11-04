@@ -3,42 +3,46 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Models\OrangTua;
 use App\Models\Siswa;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
 
 class ParentRegisterController extends Controller
 {
     public function showRegisterForm()
     {
-        return view('auth.register');
+        return view('auth.register-parent');
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|confirmed|min:6',
-            'child_nis' => 'required|exists:siswas,nis',
+            'name'       => 'required|string|max:255',
+            'email'      => 'required|string|email|max:255|unique:orangtuas,email',
+            'password'   => 'required|string|confirmed|min:6',
+            'child_nis'  => 'required|exists:siswas,nis',
         ]);
 
-        // Simpan user orang tua
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+        // Simpan ke tabel orangtuas
+        $parent = OrangTua::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'parent',
+            'nis_anak' => $request->child_nis, // tambahkan baris ini
         ]);
 
         // Hubungkan dengan anak
         $siswa = Siswa::where('nis', $request->child_nis)->first();
         if ($siswa) {
-            $siswa->parent_id = $user->id;
+            $siswa->parent_id = $parent->id;
             $siswa->save();
         }
 
-        return redirect()->route('parent.login')->with('success', 'Registrasi orang tua berhasil! Silakan login.');
+        // Login otomatis dengan guard parent
+        Auth::guard('parent')->login($parent);
+
+        return redirect()->route('parent.dashboard')->with('success', 'Registrasi orang tua berhasil!');
     }
 }

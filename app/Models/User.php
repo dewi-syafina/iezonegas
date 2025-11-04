@@ -26,6 +26,7 @@ class User extends Authenticatable
         return $this->hasOne(Siswa::class, 'user_id');
     }
 
+    
     // Relasi orang tua ke anak via ParentChild
     public function children()
     {

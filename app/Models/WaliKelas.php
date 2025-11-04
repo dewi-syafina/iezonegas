@@ -13,10 +13,21 @@ class WaliKelas extends Authenticatable
     protected $table = 'wali_kelas';
 
      protected $fillable = [
+        'user_id',
         'nama',
         'nip',
         'email',
-        'password',
+        //'password',
     ];
     protected $hidden = ['password', 'remember_token'];
+
+    public function siswas()
+    {
+        return $this->hasMany(Siswa::class, 'wali_kelas_id');
+    }
+
+     public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

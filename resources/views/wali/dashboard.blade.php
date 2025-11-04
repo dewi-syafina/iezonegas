@@ -5,8 +5,10 @@
 @section('content')
 <div class="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 py-10">
     <div class="max-w-6xl mx-auto px-4">
-        <h1 class="text-3xl font-bold text-blue-800 mb-3">Dashboard Wali Kelas</h1>
-        <p class="text-gray-600 mb-6">
+
+        <!-- Header -->
+        <h1 class="text-3xl font-bold text-blue-800 mb-2">Dashboard Wali Kelas</h1>
+        <p class="text-gray-600 mb-8">
             Selamat datang, <span class="font-semibold text-blue-700">{{ auth('walikelas')->user()->name ?? 'Wali Kelas' }}</span> 👋
         </p>
 
@@ -23,51 +25,60 @@
             </div>
         @endif
 
-        <!-- Statistik -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div class="p-5 bg-white shadow-lg rounded-2xl border-t-4 border-blue-400">
-                <h3 class="text-gray-700 font-semibold mb-2">Menunggu Persetujuan</h3>
-                <p class="text-4xl font-extrabold text-blue-500">{{ $izinCount['pending'] }}</p>
+       <!-- Statistik -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <!-- Total Pengajuan -->
+            <div class="p-4 bg-white shadow-md rounded-xl border-t-4 border-indigo-400 flex flex-col items-center justify-center text-center">
+                <h3 class="text-gray-700 font-semibold mb-1 text-sm">Total Pengajuan</h3>
+                <p class="text-3xl font-extrabold text-indigo-500">
+                    {{ $izinCount['pending'] + $izinCount['disetujui'] + $izinCount['ditolak'] }}
+                </p>
             </div>
-            <div class="p-5 bg-white shadow-lg rounded-2xl border-t-4 border-green-400">
-                <h3 class="text-gray-700 font-semibold mb-2">Disetujui</h3>
-                <p class="text-4xl font-extrabold text-green-500">{{ $izinCount['disetujui'] }}</p>
+
+            <!-- Menunggu Persetujuan -->
+            <div class="p-4 bg-white shadow-md rounded-xl border-t-4 border-yellow-400 flex flex-col items-center justify-center text-center">
+                <h3 class="text-gray-700 font-semibold mb-1 text-sm">Menunggu Persetujuan</h3>
+                <p class="text-3xl font-extrabold text-yellow-500">{{ $izinCount['pending'] }}</p>
             </div>
-            <div class="p-5 bg-white shadow-lg rounded-2xl border-t-4 border-red-400">
-                <h3 class="text-gray-700 font-semibold mb-2">Ditolak</h3>
-                <p class="text-4xl font-extrabold text-red-500">{{ $izinCount['ditolak'] }}</p>
+
+            <!-- Disetujui -->
+            <div class="p-4 bg-white shadow-md rounded-xl border-t-4 border-green-400 flex flex-col items-center justify-center text-center">
+                <h3 class="text-gray-700 font-semibold mb-1 text-sm">Disetujui</h3>
+                <p class="text-3xl font-extrabold text-green-500">{{ $izinCount['disetujui'] }}</p>
+            </div>
+
+            <!-- Ditolak -->
+            <div class="p-4 bg-white shadow-md rounded-xl border-t-4 border-red-400 flex flex-col items-center justify-center text-center">
+                <h3 class="text-gray-700 font-semibold mb-1 text-sm">Ditolak</h3>
+                <p class="text-3xl font-extrabold text-red-500">{{ $izinCount['ditolak'] }}</p>
             </div>
         </div>
 
-        <!-- Pengajuan Izin Baru -->
-        <div class="mt-10">
-            <h2 class="text-2xl font-bold text-blue-800 mb-4">📩 Pengajuan Izin Baru</h2>
+        <!-- 📨 Pengajuan Izin Baru -->
+        <div class="bg-white rounded-2xl shadow-md p-6 mb-10">
+            <h2 class="text-2xl font-bold text-blue-700 mb-4">📩 Pengajuan Izin Baru</h2>
 
             @if($izinPending->isEmpty())
-                <div class="bg-white shadow-md rounded-xl p-6 text-center text-gray-600">
+                <div class="text-center text-gray-500 py-6">
                     Belum ada pengajuan izin baru dari orang tua siswa.
                 </div>
             @else
                 <div class="space-y-4">
                     @foreach($izinPending as $izin)
-                        <div class="bg-white shadow-md rounded-xl p-5 border border-blue-100 hover:shadow-lg transition">
-                            <div class="flex justify-between items-center mb-3">
+                        <div class="border border-blue-100 p-4 rounded-xl hover:shadow-md transition">
+                            <div class="flex justify-between items-start mb-2">
                                 <div>
-                                    <h3 class="font-bold text-blue-700">{{ $izin->siswa->nama ?? '-' }}</h3>
-                                    <p class="text-gray-600 text-sm">
-                                        Alasan: <span class="italic">{{ $izin->alasan }}</span><br>
-                                        <span class="text-xs text-gray-400">Dikirim {{ $izin->created_at->diffForHumans() }}</span>
-                                    </p>
+                                    <h3 class="font-semibold text-blue-700">{{ $izin->siswa->nama ?? '-' }}</h3>
+                                    <p class="text-sm text-gray-600 italic">{{ $izin->alasan }}</p>
+                                    <span class="text-xs text-gray-400">Dikirim {{ $izin->created_at->diffForHumans() }}</span>
                                 </div>
                             </div>
-                            <form action="{{ route('walikelas.izin.update', $izin->id) }}" method="POST" class="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full">
+                            <form action="{{ route('walikelas.izin.update', $izin->id) }}" method="POST" class="flex flex-col sm:flex-row gap-3">
                                 @csrf
-                                <div class="flex items-center gap-2 w-full sm:w-auto">
-                                    <select name="status" required class="border border-blue-300 rounded-lg p-2 text-gray-700 w-full sm:w-40">
-                                        <option value="disetujui">Izinkan</option>
-                                        <option value="ditolak">Tolak</option>
-                                    </select>
-                                </div>
+                                <select name="status" required class="border border-blue-300 rounded-lg p-2 text-gray-700 w-full sm:w-40">
+                                    <option value="disetujui">Izinkan</option>
+                                    <option value="ditolak">Tolak</option>
+                                </select>
                                 <input 
                                     type="text" 
                                     name="pesan" 
@@ -76,7 +87,7 @@
                                 />
                                 <button 
                                     type="submit" 
-                                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-lg transition w-full sm:w-auto"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg transition"
                                 >
                                     Kirim
                                 </button>
@@ -88,70 +99,67 @@
         </div>
 
         <!-- 📜 Riwayat Semua Izin -->
-<div class="mt-10">
-    <h2 class="text-2xl font-bold text-blue-800 mb-4">📜 Riwayat Semua Pengajuan Izin</h2>
+        <div class="bg-white rounded-2xl shadow-md p-6">
+            <h2 class="text-2xl font-bold text-blue-700 mb-4">📜 Riwayat Semua Pengajuan Izin</h2>
 
-    @if($izinAll->isEmpty())
-        <div class="bg-white shadow-md rounded-xl p-6 text-center text-gray-600">
-            Belum ada data izin dari siswa.
+            @if($izinAll->isEmpty())
+                <div class="text-center text-gray-500 py-6">
+                    Belum ada data izin dari siswa.
+                </div>
+            @else
+                <div class="overflow-x-auto rounded-lg border border-gray-200">
+                    <table class="min-w-full bg-white text-sm">
+                        <thead class="bg-blue-600 text-white">
+                            <tr>
+                                <th class="py-3 px-4 text-left">Nama Siswa</th>
+                                <th class="py-3 px-4 text-left">Alasan</th>
+                                <th class="py-3 px-4 text-left">Status</th>
+                                <th class="py-3 px-4 text-left">Pesan Wali</th>
+                                <th class="py-3 px-4 text-left">Tanggal</th>
+                                <th class="py-3 px-4 text-center">Surat</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($izinAll as $izin)
+                                <tr class="border-b hover:bg-blue-50 transition">
+                                    <td class="py-3 px-4">{{ $izin->siswa->nama ?? '-' }}</td>
+                                    <td class="py-3 px-4">{{ $izin->alasan }}</td>
+                                    <td class="py-3 px-4">
+                                        @if($izin->status === 'approved')
+                                            <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">Disetujui</span>
+                                        @elseif($izin->status === 'rejected')
+                                            <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-semibold">Ditolak</span>
+                                        @else
+                                            <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-xs font-semibold">Menunggu</span>
+                                        @endif
+                                    </td>
+                                    <td class="py-3 px-4 text-gray-600">{{ $izin->pesan_wali ?? '-' }}</td>
+                                    <td class="py-3 px-4 text-gray-500 text-xs">{{ $izin->created_at->format('d M Y, H:i') }}</td>
+                                    <td class="py-3 px-4 text-center">
+                                        @if($izin->bukti_foto)
+                                            <a href="{{ asset('storage/' . $izin->bukti_foto) }}" target="_blank"
+                                               class="inline-flex items-center gap-1 text-blue-600 font-semibold hover:underline">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                                                     viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                          d="M15 10l4.553 4.553a2 2 0 01-2.828 2.828L12 12.828l-4.725 4.553a2 2 0 01-2.828-2.828L9 10m6 0V4m0 6l-6-6" />
+                                                </svg>
+                                                Lihat
+                                            </a>
+                                        @else
+                                            <span class="text-gray-400">-</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endif
         </div>
-    @else
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white rounded-xl shadow-md overflow-hidden">
-                <thead class="bg-blue-600 text-white">
-                    <tr>
-                        <th class="py-3 px-4 text-left">Nama Siswa</th>
-                        <th class="py-3 px-4 text-left">Alasan</th>
-                        <th class="py-3 px-4 text-left">Status</th>
-                        <th class="py-3 px-4 text-left">Pesan Wali</th>
-                        <th class="py-3 px-4 text-left">Tanggal</th>
-                        <th class="py-3 px-4 text-center">Surat</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($izinAll as $izin)
-                        <tr class="border-b hover:bg-blue-50 transition">
-                            <td class="py-3 px-4">{{ $izin->siswa->nama ?? '-' }}</td>
-                            <td class="py-3 px-4">{{ $izin->alasan }}</td>
-                            <td class="py-3 px-4">
-                                @if($izin->status === 'approved')
-                                    <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">Disetujui</span>
-                                @elseif($izin->status === 'rejected')
-                                    <span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">Ditolak</span>
-                                @else
-                                    <span class="bg-yellow-100 text-yellow-700 px-3 py-1 rounded-full text-sm font-semibold">Menunggu</span>
-                                @endif
-                            </td>
-                            <td class="py-3 px-4 text-gray-600">{{ $izin->pesan_wali ?? '-' }}</td>
-                            <td class="py-3 px-4 text-gray-500 text-sm">{{ $izin->created_at->format('d M Y, H:i') }}</td>
-
-                            <!-- 🧾 Tambahan kolom untuk Surat -->
-                            <td class="py-3 px-4 text-center">
-                                @if($izin->bukti_foto)
-                                    <a href="{{ asset('storage/' . $izin->bukti_foto) }}" target="_blank" 
-                                        class="inline-flex items-center gap-1 text-blue-600 font-semibold hover:underline">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                                            viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M15 10l4.553 4.553a2 2 0 01-2.828 2.828L12 12.828l-4.725 4.553a2 2 0 01-2.828-2.828L9 10m6 0V4m0 6l-6-6" />
-                                        </svg>
-                                        Lihat
-                                    </a>
-                                @else
-                                    <span class="text-gray-400">-</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-    @endif
-</div>
 
     </div>
 </div>
 
-<!-- Alpine.js untuk notifikasi -->
 <script src="//unpkg.com/alpinejs" defer></script>
 @endsection

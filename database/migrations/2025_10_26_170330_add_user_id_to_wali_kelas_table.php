@@ -11,15 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orangtuas', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama');
-            $table->string('email')->unique();
-            $table->string('password');
-            $table->string('nis_anak')->nullable();
-            $table->timestamps();
+        Schema::table('wali_kelas', function (Blueprint $table) {
+            $table->unsignedBigInteger('user_id')->after('id')->nullable();
         });
-
     }
 
     /**
@@ -27,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orangtuas');
+        Schema::table('wali_kelas', function (Blueprint $table) {
+            //
+        });
     }
 };

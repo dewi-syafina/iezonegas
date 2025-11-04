@@ -25,13 +25,40 @@ class Siswa extends Authenticatable
         'password',
     ];
 
-    public function waliKelas()
-    {
-        return $this->belongsTo(User::class, 'wali_kelas_id');
-    }
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    //public function waliKelas()
+    //{
+      //  return $this->belongsTo(User::class, 'wali_kelas_id');
+    //}
 
     public function izins()
     {
         return $this->hasMany(Izin::class, 'siswa_id');
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function orangtua()
+    {
+        return $this->belongsTo(OrangTua::class, 'parent_id');
+    }
+
+
+    public function waliKelas()
+    {
+        return $this->belongsTo(User::class, 'wali_kelas_id');
+    }
+
+    public function kelas()
+    {
+        return $this->belongsTo(Kelas::class, 'kelas_id');
+    }
+
 }
