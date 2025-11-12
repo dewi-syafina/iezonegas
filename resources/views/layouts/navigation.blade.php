@@ -1,100 +1,140 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
-                    </a>
+<!-- resources/views/layouts/navbar.blade.php -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', config('app.name', 'IEZ-ONE'))</title>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    <!-- AOS Animate On Scroll -->
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            AOS.init({ duration: 1000, once: true });
+        });
+    </script>
+
+    <!-- Tailwind + custom styles -->
+    <style>
+        body { padding-top: 80px; background: linear-gradient(135deg, #F0E6FF 0%, #E6F7FF 50%, #FFF5E6 100%); }
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .animate-float { animation: float 3s ease-in-out infinite; }
+        .nav-link { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 1rem; font-weight: 500; transition: all 0.3s ease; text-decoration: none; }
+        .nav-link:hover { transform: scale(1.05); box-shadow: 0 4px 15px rgba(123,104,238,0.3); }
+        .nav-link-primary { background: linear-gradient(135deg, #7B68EE, #20B2AA); color: white; }
+        .nav-link-secondary { background: linear-gradient(135deg, #FFDAB9, #F0E68C); color: #7B68EE; }
+        .nav-link-secondary:hover { background: linear-gradient(135deg, #FFA07A, #F0E68C); }
+    </style>
+</head>
+<body class="font-sans text-gray-800 antialiased">
+
+@php
+    $guards = ['siswa', 'parent', 'walikelas'];
+    $loggedInGuard = null;
+    foreach ($guards as $g) {
+        if (auth()->guard($g)->check()) {
+            $loggedInGuard = $g;
+            break;
+        }
+    }
+@endphp
+
+<div class="flex flex-wrap justify-center gap-4 items-center">
+    @if ($loggedInGuard)
+        <a href="{{ url('/dashboard') }}" 
+           class="bg-purple-400 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold shadow-lg hover:bg-purple-500 transition transform hover:scale-105">
+           Buka Dashboard
+        </a>
+
+        {{-- Tombol Logout --}}
+        @if($loggedInGuard == 'siswa')
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-siswa-form').submit();" 
+               class="bg-red-400 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold shadow-lg hover:bg-red-500 transition transform hover:scale-105">
+               Logout Siswa
+            </a>
+            <form id="logout-siswa-form" action="{{ route('siswa.logout') }}" method="POST" style="display:none;">
+                @csrf
+            </form>
+        @elseif($loggedInGuard == 'parent')
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-parent-form').submit();" 
+               class="bg-red-400 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold shadow-lg hover:bg-red-500 transition transform hover:scale-105">
+               Logout Orang Tua
+            </a>
+            <form id="logout-parent-form" action="{{ route('parent.logout') }}" method="POST" style="display:none;">
+                @csrf
+            </form>
+        @elseif($loggedInGuard == 'walikelas')
+            <a href="#" onclick="event.preventDefault(); document.getElementById('logout-walikelas-form').submit();" 
+               class="bg-red-400 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold shadow-lg hover:bg-red-500 transition transform hover:scale-105">
+               Logout Wali Kelas
+            </a>
+            <form id="logout-walikelas-form" action="{{ route('walikelas.logout') }}" method="POST" style="display:none;">
+                @csrf
+            </form>
+        @endif
+
+    @else
+        <!-- Dropdown LOGIN -->
+        <div class="relative inline-block text-left">
+            <button type="button" 
+                    class="bg-orange-400 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold shadow-lg hover:bg-orange-500 transition transform hover:scale-105 focus:outline-none"
+                    id="login-button"
+                    onclick="document.getElementById('dropdown-login').classList.toggle('hidden')">
+                Masuk Sekarang
+            </button>
+            <div id="dropdown-login"
+                 class="hidden absolute mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                <div class="py-2">
+                    <a href="{{ route('siswa.login') }}" 
+                       class="block px-4 py-2 text-gray-700 hover:bg-orange-100">Login Siswa</a>
+                    <a href="{{ route('parent.login') }}" 
+                       class="block px-4 py-2 text-gray-700 hover:bg-orange-100">Login Orang Tua</a>
+                    <a href="{{ route('walikelas.login') }}" 
+                       class="block px-4 py-2 text-gray-700 hover:bg-orange-100">Login Wali Kelas</a>
                 </div>
-
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
+            </div>
+        </div>
+        <!-- Dropdown REGISTER -->
+        <div class="relative inline-block text-left">
+            <button type="button" 
+                    class="bg-purple-400 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold shadow-lg hover:bg-purple-500 transition transform hover:scale-105 focus:outline-none"
+                    id="register-button"
+                    onclick="document.getElementById('dropdown-register').classList.toggle('hidden')">
+                Daftar Sekarang
+            </button>
+            <div id="dropdown-register"
+                 class="hidden absolute mt-2 w-48 rounded-lg shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                <div class="py-2">
+                    <a href="{{ route('siswa.register') }}" 
+                       class="block px-4 py-2 text-gray-700 hover:bg-purple-100">Daftar Siswa</a>
+                    <a href="{{ route('parent.register') }}" 
+                       class="block px-4 py-2 text-gray-700 hover:bg-purple-100">Daftar Orang Tua</a>
+                    <a href="{{ route('walikelas.register') }}" 
+                       class="block px-4 py-2 text-gray-700 hover:bg-purple-100">Daftar Wali Kelas</a>
                 </div>
             </div>
-
-            <!-- Settings Dropdown -->
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                {{ __('Log Out') }}
-                            </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
-            </div>
-
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
-            </div>
         </div>
-    </div>
+    @endif
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
+    <!-- Tombol pelajari -->
+    <a href="#fitur" 
+       class="border-2 border-purple-400 text-purple-700 px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold hover:bg-purple-50 transition transform hover:scale-105">
+       Pelajari Lebih Lanjut
+    </a>
+</div>
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
-                </form>
-            </div>
-        </div>
-    </div>
-</nav>
+<script>
+    // Klik di luar dropdown untuk menutup
+    document.addEventListener('click', function(e) {
+        const button = document.getElementById('menu-button');
+        const dropdown = document.getElementById('dropdown-login');
+        if (!button.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+</script>
+</body>
+</html>

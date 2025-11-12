@@ -27,74 +27,7 @@
             </div>
         @endif
 
-        <form action="{{ route('parent.izin.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
-            @csrf
-
-            <!-- Pilih Anak -->
-            <div>
-                <label class="block font-semibold text-gray-700 mb-2">👧 Pilih Anak</label>
-                <select name="siswa_id" required
-                    class="w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition duration-200">
-                    @foreach(Auth::user()->students as $siswa)
-                        <option value="{{ $siswa->id }}">{{ $siswa->nama }} ({{ $siswa->nis }})</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Jenis Izin -->
-            <div>
-                <label class="block font-semibold text-gray-700 mb-2">📄 Jenis Izin</label>
-                <select name="jenis_izin" required
-                    class="w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition duration-200">
-                    <option value="ijin">Izin - Tidak hadir dengan izin</option>
-                    <option value="sakit">Sakit - Tidak hadir karena sakit</option>
-                    <option value="dispensasi">Dispensasi - Izin khusus sekolah</option>
-                </select>
-            </div>
-
-            <!-- Tanggal -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block font-semibold text-gray-700 mb-2">📅 Tanggal Mulai</label>
-                    <input type="date" name="tanggal_mulai" required
-                        class="w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition duration-200">
-                </div>
-                <div>
-                    <label class="block font-semibold text-gray-700 mb-2">📅 Tanggal Selesai</label>
-                    <input type="date" name="tanggal_selesai" required
-                        class="w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition duration-200">
-                </div>
-            </div>
-
-            <!-- Alasan -->
-            <div>
-                <label class="block font-semibold text-gray-700 mb-2">📝 Alasan</label>
-                <textarea name="alasan" rows="3" required
-                    class="w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition duration-200"
-                    placeholder="Tuliskan alasan izin anak Anda..."></textarea>
-            </div>
-
-            <!-- Upload Bukti -->
-            <div>
-                <label class="block font-semibold text-gray-700 mb-2">📸 Bukti Foto (Opsional)</label>
-                <input type="file" name="bukti_foto" accept="image/*" id="bukti_foto"
-                    class="w-full border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition duration-200">
-                <p class="text-sm text-gray-500 mt-1">Format: JPG/PNG | Maks: 2MB</p>
-
-                <!-- Preview Gambar -->
-                <div id="preview" class="mt-3 hidden">
-                    <img id="preview_img" class="w-40 h-40 object-cover rounded-xl border shadow-sm">
-                </div>
-            </div>
-
-            <!-- Tombol -->
-            <div class="flex justify-end pt-4">
-                <button type="submit"
-                    class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white px-8 py-2.5 rounded-xl font-semibold shadow-md transition transform hover:scale-105">
-                    💌 Ajukan Izin
-                </button>
-            </div>
-        </form>
+        
     </div>
 </div>
 
@@ -116,5 +49,26 @@ document.getElementById('bukti_foto').addEventListener('change', function(e) {
         img.src = '';
     }
 });
+
+const jenis = document.querySelector('select[name="jenis_izin"]');
+const alasan = document.querySelector('textarea[name="alasan"]');
+const tanggalMulai = document.querySelector('input[name="tanggal_mulai"]');
+const tanggalSelesai = document.querySelector('input[name="tanggal_selesai"]');
+
+function updatePreview() {
+    document.getElementById('preview-surat').classList.remove('hidden');
+    document.getElementById('preview-nomor').innerText = 'IZIN/' + new Date().getFullYear() + '/AUTO';
+    document.getElementById('preview-nama').innerText = document.querySelector('select[name="siswa_id"] option:checked').text;
+    document.getElementById('preview-jenis').innerText = jenis.value;
+    document.getElementById('preview-tanggal').innerText = tanggalMulai.value + ' s.d ' + tanggalSelesai.value;
+    document.getElementById('preview-alasan').innerText = alasan.value;
+}
+
+jenis.addEventListener('change', updatePreview);
+alasan.addEventListener('input', updatePreview);
+tanggalMulai.addEventListener('change', updatePreview);
+tanggalSelesai.addEventListener('change', updatePreview);
+document.querySelector('select[name="siswa_id"]').addEventListener('change', updatePreview);
+
 </script>
 @endsection

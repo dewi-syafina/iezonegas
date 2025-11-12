@@ -18,36 +18,34 @@ class SiswaController extends Controller
     // Dashboard utama siswa
     public function dashboard()
     {
-        $siswa = Auth::guard('siswa')->user(); // ambil data siswa terkait user
+        $siswa = Auth::guard('siswa')->user();
 
-        // Ambil seluruh izin yang diajukan oleh orang tua untuk siswa ini
         $izinList = Izin::where('siswa_id', $siswa->id)
-            ->with('waliKelas') // relasi ke wali kelas jika ada
+            ->with(['orangTua', 'siswa.waliKelas'])
             ->orderBy('created_at', 'desc')
             ->get();
 
         return view('siswa.dashboard', compact('siswa', 'izinList'));
     }
 
-    // Halaman riwayat izin (opsional, bisa dipisah)
+    // Halaman riwayat izin
     public function izin()
     {
-        $siswa = Auth::user()->siswa;
+        $siswa = Auth::guard('siswa')->user();
 
         $izinList = Izin::where('siswa_id', $siswa->id)
-        ->with(['orangTua'])
-        ->orderBy('created_at', 'desc')
-        ->get();
-
-
+            ->with(['orangTua'])
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('siswa.izin', compact('siswa', 'izinList'));
     }
 
-    // Profil siswa (opsional jika ada halaman khusus)
+    // Profil siswa
     public function profil()
     {
-        $siswa = Auth::user()->siswa;
+        $siswa = Auth::guard('siswa')->user();
+
         return view('siswa.profil', compact('siswa'));
     }
 }

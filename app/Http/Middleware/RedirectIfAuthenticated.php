@@ -26,10 +26,11 @@ class RedirectIfAuthenticated
                     return redirect()->route('siswa.dashboard');
                 case 'parent':
                     return redirect()->route('parent.dashboard');
-                case 'wali':
-                    return redirect()->route('wali.dashboard');
+                case 'walikelas':
+                    return redirect()->route('walikelas.dashboard');
                 default:
                     return redirect('/dashboard');
+                    
             }
         }
     }

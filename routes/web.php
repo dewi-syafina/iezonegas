@@ -10,14 +10,14 @@ use App\Http\Controllers\Auth\WaliKelasLoginController;
 use App\Http\Controllers\Auth\ParentRegisterController;
 use App\Http\Controllers\Auth\WaliKelasRegisterController;
 use App\Http\Controllers\Auth\RegisterSiswaController;
-use App\Http\Controllers\Siswa\SiswaController;
-use App\Http\Controllers\Parent\OrangTuaController;
-use App\Http\Controllers\WaliKelas\WaliKelasController;
+use App\Http\Controllers\Siswa\SiswaDashboardController;
+use App\Http\Controllers\Parent\OrangTuaDashboardController;
+use App\Http\Controllers\WaliKelas\WaliKelasDashboardController;
 use App\Http\Controllers\WaliKelas\IzinController as WaliKelasIzinController;
 use App\Http\Controllers\Auth\RedirectController;
 
 // ==================== HALAMAN UTAMA ====================
-Route::get('/', fn () => view('welcome'));
+Route::get('/', fn () => view('welcome'))->name('welcome');
 
 // ==================== DASHBOARD DEFAULT ====================
 Route::get('/dashboard', fn () => view('dashboard'))
@@ -32,11 +32,10 @@ Route::middleware('auth')->group(function () {
 });
 
 
-// ============================================================
+
 // ==================== SISWA =================================
 // ============================================================
 Route::prefix('siswa')->name('siswa.')->group(function () {
-    // LOGIN & LOGOUT
     Route::get('/login', [SiswaLoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [SiswaLoginController::class, 'login'])->name('login.submit');
     Route::post('/logout', [SiswaLoginController::class, 'logout'])->name('logout');
@@ -47,19 +46,18 @@ Route::prefix('siswa')->name('siswa.')->group(function () {
 
     // DASHBOARD & FITUR SISWA
     Route::middleware('auth:siswa')->group(function () {
-        Route::get('/dashboard', [SiswaController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [SiswaDashboardController::class, 'dashboard'])->name('dashboard');
         Route::get('/izin', [SiswaController::class, 'izin'])->name('izin');
         Route::post('/izin', [SiswaController::class, 'storeIzin'])->name('izin.store');
         Route::get('/profil', [SiswaController::class, 'profil'])->name('profil');
     });
-});
+}); // ✅ TUTUP GRUP SISWA DI SINI
 
 
 // ============================================================
 // ==================== ORANG TUA =============================
 // ============================================================
 Route::prefix('parent')->name('parent.')->group(function () {
-    // LOGIN & LOGOUT
     Route::get('/login', [ParentLoginController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [ParentLoginController::class, 'login'])->name('login.submit');
     Route::post('/logout', [ParentLoginController::class, 'logout'])->name('logout');
@@ -68,35 +66,41 @@ Route::prefix('parent')->name('parent.')->group(function () {
     Route::get('/register', [ParentRegisterController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [ParentRegisterController::class, 'store'])->name('register.store');
 
-    // DASHBOARD & IZIN (PASTIKAN GUARD = ORANGTUA)
-   Route::middleware('auth:parent')->group(function () {
-        Route::get('/dashboard', [OrangTuaController::class, 'index'])->name('dashboard');
-        Route::get('/izin/create/{siswa}', [OrangTuaController::class, 'createIzin'])->name('izin.create');
-        Route::post('/izin/store', [OrangTuaController::class, 'storeIzin'])->name('izin.store');
+    // DASHBOARD & IZIN
+    Route::middleware('auth:parent')->group(function () {
+        // Dashboard utama parent
+        Route::get('/dashboard', [OrangTuaDashboardController::class, 'dashboard'])->name('dashboard');
+
+        // Ajukan izin untuk anak tertentu
+        Route::get('/izin/create/{siswa}', [OrangTuaDashboardController::class, 'createIzin'])->name('izin.create');
+        Route::post('/izin/store', [OrangTuaDashboardController::class, 'storeIzin'])->name('izin.store');
     });
-});
+}); // ✅ TUTUP GRUP PARENT DI SINI
+
+
 // ============================================================
 // ==================== WALI KELAS ============================
 // ============================================================
 
 Route::prefix('walikelas')->name('walikelas.')->group(function () {
-     // LOGIN & LOGOUT
-    Route::get('/login', [WaliKelasLoginController::class, 'showLoginForm'])->name('login');
+    // LOGIN
     Route::post('/login', [WaliKelasLoginController::class, 'login'])->name('login.submit');
     Route::post('/logout', [WaliKelasLoginController::class, 'logout'])->name('logout');
 
-    // REGISTER
+    // REGISTER (Sesuai migration: wali_kelas)
     Route::get('/register', [WaliKelasRegisterController::class, 'showRegisterForm'])->name('register');
     Route::post('/register', [WaliKelasRegisterController::class, 'store'])->name('register.store');
 
+    // DASHBOARD & FITUR WALI KELAS
+Route::middleware('auth:walikelas')->group(function () {
+    Route::get('/dashboard', [WaliKelasDashboardController::class, 'dashboard'])->name('dashboard');
+    Route::get('/profil', [WaliKelasDashboardController::class, 'profil'])->name('profil');
 
-    // DASHBOARD & IZIN
-    Route::middleware('auth:walikelas')->group(function () {
-        Route::get('/dashboard', [WaliKelasController::class, 'dashboard'])->name('dashboard');
-        Route::get('/profil', [WaliKelasController::class, 'profil'])->name('profil');
-        Route::get('/izin', [WaliKelasController::class, 'izinIndex'])->name('izin.index');
-        Route::post('/izin/{id}/update', [WaliKelasController::class, 'updateIzin'])->name('izin.update');
-    });
+    Route::get('/izin', [WaliKelasDashboardController::class, 'izinIndex'])->name('izin.index');
+    Route::post('/izin/{id}/update', [WaliKelasDashboardController::class, 'updateIzin'])->name('izin.update');
+
+
+});
 });
 
 

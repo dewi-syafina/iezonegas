@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Parent;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
 use App\Models\Izin;
 use App\Models\Siswa;
 use Illuminate\Support\Facades\Auth;
@@ -18,7 +19,11 @@ class IzinController extends Controller
     public function index(Request $request)
     {
         $parent = Auth::guard('parent')->user();
-        $students = $parent->students()->with('classroom')->get();
+                if ($parent->siswas->isEmpty()) {
+            return redirect()->route('parent.dashboard')->with('error', 'Anda belum memiliki anak yang terdaftar.');
+        }
+
+        $students = $parent->students()->with('kelas')->get(); // pastikan relasi 'kelas' sesuai
         $izin = Izin::where('parent_id', $parent->id)
             ->with('siswa')
             ->orderBy('created_at','desc')
@@ -29,37 +34,40 @@ class IzinController extends Controller
 
     // Simpan pengajuan izin
     public function store(Request $request)
-    {
-        $request->validate([
-            'siswa_id' => 'required|exists:siswas,id',
-            'jenis_izin' => 'required|string',
-            'alasan' => 'required|string',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'required|date|after_or_equal:tanggal_mulai',
-            'bukti_foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        {
+            $request->validate([
+                'siswa_id' => 'required',
+                'jenis_izin' => 'required',
+                'alasan' => 'required',
+                'bukti_foto' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            ]);
 
-        $parent = $request->user();
-        $siswa = \App\Models\Siswa::findOrFail($request->siswa_id);
+            $parent = Auth::guard('parent')->user();
 
-        // Upload bukti foto jika ada
-        $buktiPath = $request->hasFile('bukti_foto')
-            ? $request->file('bukti_foto')->store('bukti_izin', 'public')
-            : null;
+            // 🔹 Buat nomor surat otomatis
+            $lastIzin = Izin::latest()->first();
+            $nextNumber = $lastIzin ? str_pad($lastIzin->id + 1, 3, '0', STR_PAD_LEFT) : '001';
+            $nomorSurat = 'IZIN/' . date('Y') . '/' . $nextNumber;
 
-        // Simpan izin baru
-        \App\Models\Izin::create([
-            'siswa_id' => $siswa->id,
-            'parent_id' => $parent->id,
-            'tanggal_mulai' => $request->tanggal_mulai,
-            'tanggal_selesai' => $request->tanggal_selesai,
-            'jenis_izin' => $request->jenis_izin,
-            'alasan' => $request->alasan,
-            'bukti_foto' => $buktiPath,
-            'status' => 'pending', // Belum diproses wali kelas
-        ]);
+            $data = [
+                'siswa_id' => $request->siswa_id,
+                'parent_id' => $parent->id,
+                'jenis_izin' => $request->jenis_izin,
+                'alasan' => $request->alasan,
+                'nomor_surat' => $nomorSurat,
+                'tanggal_pengajuan' => Carbon::now()->format('Y-m-d'),
+                'status' => 'pending',
+            ];
 
-        return redirect()->route('parent.dashboard')->with('success', 'Izin berhasil diajukan dan menunggu persetujuan wali kelas.');
-    }
+            if ($request->hasFile('bukti_foto')) {
+                $data['bukti_foto'] = $request->file('bukti_foto')->store('bukti_izin', 'public');
+            }
 
+            Izin::create($data);
+
+            return redirect()
+                ->route('parent.dashboard')
+                ->with('success', '✅ Izin telah terkirim ke wali kelas dan sedang menunggu persetujuan.');
+        }
+    
 }

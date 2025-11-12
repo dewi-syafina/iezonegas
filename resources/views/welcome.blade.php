@@ -1,136 +1,116 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+@extends('layouts.app')
 
-    <title>IEZ-ONE | Sistem Izin Siswa</title>
+@section('title', 'IEZ-ONE | Sistem Izin Siswa')
 
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,600&display=swap" rel="stylesheet" />
+@section('content')
+{{-- 🏠 Hero Section --}}
+<section class="relative flex flex-col items-center justify-center text-center min-h-screen px-6 pt-32 md:pt-36 lg:pt-40 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-green-50/50"></div>
 
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <h1 data-aos="fade-up" class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight text-purple-800 relative z-10">
+        Selamat Datang di <span class="text-orange-500 animate-float">IEZ-ONE</span>
+    </h1>
 
-    <!-- AOS Animate On Scroll -->
-    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
-    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <p data-aos="fade-up" data-aos-delay="200" class="text-base sm:text-lg md:text-xl text-gray-600 max-w-xl md:max-w-2xl leading-relaxed relative z-10">
+        Sistem Izin Tidak Masuk Sekolah berbasis web yang mempermudah komunikasi antara siswa, orang tua, dan pihak sekolah dengan sentuhan pastel yang menyenangkan.
+    </p>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            AOS.init({
-                duration: 1000,
-                once: true,
-            });
-        });
-    </script>
-</head>
-<body class="antialiased bg-gradient-to-b from-blue-100 via-blue-50 to-white text-gray-800 selection:bg-blue-600 selection:text-white">
+    {{-- 🔽 Tombol Login Dropdown --}}
+    <div data-aos="fade-up" data-aos-delay="400" class="mt-8 flex flex-wrap justify-center gap-4 relative z-10">
+        @php
+            $guards = ['web', 'siswa', 'parent', 'walikelas'];
+            $isLoggedIn = false;
+            foreach ($guards as $g) {
+                if (auth()->guard($g)->check()) {
+                    $isLoggedIn = true;
+                    break;
+                }
+            }
+        @endphp
 
-    {{-- 🌐 Navbar --}}
-    <nav class="fixed w-full top-0 z-50 bg-white/80 backdrop-blur-md shadow-sm border-b border-blue-100">
-        <div class="max-w-7xl mx-auto flex justify-between items-center px-6 py-4">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold shadow-md">I</div>
-                <span class="text-2xl font-extrabold text-blue-700">IEZ-ONE</span>
-            </div>
-            @if (Route::has('login'))
-                <div class="flex items-center space-x-4">
-                    @auth
-                        <a href="{{ url('/dashboard') }}" class="text-gray-700 font-semibold hover:text-blue-600">Dashboard</a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-gray-700 font-semibold hover:text-blue-600">Login</a>
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="text-gray-700 font-semibold hover:text-blue-600">Daftar</a>
-                        @endif
-                    @endauth
-                </div>
-            @endif
-        </div>
-    </nav>
-
-    {{-- 🏠 Hero Section --}}
-    <section class="flex flex-col items-center justify-center text-center min-h-screen px-6 pt-24">
-        <h1 data-aos="fade-up" class="text-4xl md:text-6xl font-extrabold mb-6 leading-tight text-blue-800">
-            Selamat Datang di <span class="text-blue-500">IEZ-ONE</span>
-        </h1>
-        <p data-aos="fade-up" data-aos-delay="200" class="text-lg text-gray-600 max-w-2xl leading-relaxed">
-            Sistem Izin Tidak Masuk Sekolah berbasis web yang mempermudah komunikasi antara siswa, orang tua, dan pihak sekolah.
-        </p>
-
-        <div data-aos="fade-up" data-aos-delay="400" class="mt-8 flex flex-wrap justify-center gap-4">
-            @auth
-                <a href="{{ url('/dashboard') }}" class="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:bg-blue-700 transition">
-                    Buka Dashboard
-                </a>
-            @else
-                <a href="{{ route('login') }}" class="bg-blue-600 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:bg-blue-700 transition">
-                    Masuk Sekarang
-                </a>
-            @endauth
-            <a href="#fitur" class="border border-blue-600 text-blue-700 px-8 py-3 rounded-full font-semibold hover:bg-blue-50 transition">
-                Pelajari Lebih Lanjut
+        @if ($isLoggedIn)
+            <a href="{{ url('/dashboard') }}" 
+               class="bg-purple-400 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold shadow-lg hover:bg-purple-500 transition transform hover:scale-105">
+               Buka Dashboard
             </a>
-        </div>
+        @else
+            <!-- Tombol dropdown login -->
+            <div class="relative inline-block text-left">
+                <button type="button" 
+                        class="bg-orange-400 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold shadow-lg hover:bg-orange-500 transition transform hover:scale-105 focus:outline-none"
+                        id="menu-button"
+                        onclick="document.getElementById('dropdown-login').classList.toggle('hidden')">
+                    Masuk Sekarang
+                </button>
 
-        <!-- Efek lingkaran cahaya -->
-        <div class="absolute w-72 h-72 bg-blue-400/20 rounded-full blur-3xl top-1/3 left-1/4 -z-10"></div>
-        <div class="absolute w-96 h-96 bg-blue-500/10 rounded-full blur-3xl bottom-10 right-10 -z-10"></div>
-    </section>
+                
+            </div>
+        @endif
 
-    {{-- 💡 Fitur Section --}}
-    <section id="fitur" class="bg-gradient-to-r from-blue-50 to-blue-100 py-16">
-        <div class="max-w-6xl mx-auto px-6">
-            <h2 data-aos="fade-up" class="text-3xl font-bold text-center text-blue-700 mb-12">Fitur Unggulan IEZ-ONE</h2>
-            <div class="grid md:grid-cols-3 gap-8">
-                <div data-aos="fade-up" data-aos-delay="100" class="p-6 bg-white rounded-2xl shadow-md text-center hover:scale-105 transition">
-                    <div class="text-blue-600 text-5xl mb-4">📱</div>
-                    <h3 class="text-xl font-semibold mb-2">Mudah Digunakan</h3>
-                    <p class="text-gray-600 text-sm">
-                        Antarmuka intuitif dan responsif membuat pengguna dapat mengajukan izin kapan pun dan di mana pun.
-                    </p>
+        <a href="#fitur" class="border-2 border-purple-400 text-purple-700 px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold hover:bg-purple-50 transition transform hover:scale-105">
+            Pelajari Lebih Lanjut
+        </a>
+    </div>
+
+    <!-- Efek lingkaran pastel -->
+    <div class="absolute w-56 h-56 sm:w-72 sm:h-72 bg-orange-200/20 rounded-full blur-3xl top-1/4 left-1/4 -z-10 animate-float"></div>
+    <div class="absolute w-80 h-80 sm:w-96 sm:h-96 bg-green-200/20 rounded-full blur-3xl bottom-10 right-10 -z-10 animate-float" style="animation-delay: 1.5s;"></div>
+    <div class="absolute w-48 h-48 sm:w-64 sm:h-64 bg-purple-200/20 rounded-full blur-3xl top-1/2 right-1/4 -z-10 animate-float" style="animation-delay: 3s;"></div>
+</section>
+
+{{-- 💡 Fitur Section --}}
+<section id="fitur" class="bg-gradient-to-r from-green-50 to-orange-50 py-16">
+    <div class="max-w-6xl mx-auto px-6">
+        <h2 data-aos="fade-up" class="text-2xl sm:text-3xl font-bold text-center text-purple-700 mb-12">Fitur Unggulan IEZ-ONE</h2>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            @php
+            $features = [
+                ['icon'=>'📱','title'=>'Mudah Digunakan','desc'=>'Antarmuka intuitif dan responsif membuat pengguna dapat mengajukan izin kapan pun dan di mana pun.','color'=>'orange-500','border'=>'green-200'],
+                ['icon'=>'🔒','title'=>'Data Aman','desc'=>'Data izin disimpan aman di server dan hanya dapat diakses oleh pihak yang berwenang.','color'=>'green-500','border'=>'purple-200'],
+                ['icon'=>'⚡','title'=>'Proses Cepat','desc'=>'Orang tua dapat mengajukan izin hanya dalam hitungan detik, tanpa harus datang ke sekolah.','color'=>'purple-500','border'=>'orange-200']
+            ];
+            @endphp
+
+            @foreach($features as $feature)
+                <div data-aos="fade-up" data-aos-delay="{{ $loop->index*100 }}" class="p-6 bg-white rounded-2xl shadow-lg text-center hover:scale-105 transition transform border border-{{ $feature['border'] }} hover:shadow-xl">
+                    <div class="text-4xl sm:text-5xl mb-4 animate-float">{{ $feature['icon'] }}</div>
+                    <h3 class="text-xl font-semibold mb-2 text-purple-700">{{ $feature['title'] }}</h3>
+                    <p class="text-gray-600 text-sm sm:text-base">{{ $feature['desc'] }}</p>
                 </div>
-                <div data-aos="fade-up" data-aos-delay="200" class="p-6 bg-white rounded-2xl shadow-md text-center hover:scale-105 transition">
-                    <div class="text-blue-600 text-5xl mb-4">🔒</div>
-                    <h3 class="text-xl font-semibold mb-2">Data Aman</h3>
-                    <p class="text-gray-600 text-sm">
-                        Data izin disimpan aman di server dan hanya dapat diakses oleh pihak yang berwenang.
-                    </p>
-                </div>
-                <div data-aos="fade-up" data-aos-delay="300" class="p-6 bg-white rounded-2xl shadow-md text-center hover:scale-105 transition">
-                    <div class="text-blue-600 text-5xl mb-4">⚡</div>
-                    <h3 class="text-xl font-semibold mb-2">Proses Cepat</h3>
-                    <p class="text-gray-600 text-sm">
-                        Orang tua dapat mengajukan izin hanya dalam hitungan detik, tanpa harus datang ke sekolah.
-                    </p>
-                </div>
-            </div>
+            @endforeach
         </div>
-    </section>
+    </div>
+</section>
 
-    {{-- 📊 Statistik --}}
-    <section class="py-16 bg-blue-600 text-white text-center">
-        <h2 data-aos="fade-up" class="text-3xl font-bold mb-8">Statistik Penggunaan</h2>
-        <div data-aos="zoom-in" class="flex justify-center gap-10 flex-wrap">
-            <div>
-                <div class="text-5xl font-extrabold">250+</div>
-                <p class="text-sm opacity-80">Siswa Terdaftar</p>
-            </div>
-            <div>
-                <div class="text-5xl font-extrabold">120+</div>
-                <p class="text-sm opacity-80">Izin Terkirim</p>
-            </div>
-            <div>
-                <div class="text-5xl font-extrabold">10+</div>
-                <p class="text-sm opacity-80">Guru Terhubung</p>
-            </div>
+{{-- 📊 Statistik --}}
+<section class="py-16 bg-gradient-to-r from-orange-100 to-purple-100 text-purple-800 text-center">
+    <h2 data-aos="fade-up" class="text-2xl sm:text-3xl font-bold mb-8">Statistik Penggunaan</h2>
+
+    <div data-aos="zoom-in" class="flex flex-wrap justify-center gap-6 sm:gap-10">
+        <div class="bg-white/50 p-6 rounded-2xl shadow-lg hover:scale-105 transition transform w-40 sm:w-48">
+            <div class="text-4xl sm:text-5xl font-extrabold text-orange-600">250+</div>
+            <p class="text-sm sm:text-base opacity-80">Siswa Terdaftar</p>
         </div>
-    </section>
+        <div class="bg-white/50 p-6 rounded-2xl shadow-lg hover:scale-105 transition transform w-40 sm:w-48">
+            <div class="text-4xl sm:text-5xl font-extrabold text-green-600">120+</div>
+            <p class="text-sm sm:text-base opacity-80">Izin Terkirim</p>
+        </div>
+        <div class="bg-white/50 p-6 rounded-2xl shadow-lg hover:scale-105 transition transform w-40 sm:w-48">
+            <div class="text-4xl sm:text-5xl font-extrabold text-purple-600">10+</div>
+            <p class="text-sm sm:text-base opacity-80">Guru Terhubung</p>
+        </div>
+    </div>
+</section>
 
-    {{-- ⚙️ Footer --}}
-    <footer class="text-center py-6 bg-white text-gray-600 text-sm border-t border-gray-200">
-        <p>© {{ date('Y') }} <span class="font-semibold text-blue-600">IEZ-ONE</span> — Sistem Izin Tidak Masuk Sekolah.</p>
-        <p class="mt-1">Kelompok 7 XII PPLG 2 SMK Negeri 1 Sayung.</p>
-    </footer>
-
-</body>
-</html>
+<script>
+    // Tutup dropdown jika klik di luar
+    document.addEventListener('click', function(e) {
+        const button = document.getElementById('menu-button');
+        const dropdown = document.getElementById('dropdown-login');
+        if (dropdown && !button.contains(e.target)) {
+            dropdown.classList.add('hidden');
+        }
+    });
+</script>
+@endsection

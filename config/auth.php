@@ -94,12 +94,12 @@ return [
 
         'siswas' => [
             'driver' => 'eloquent',
-            'model' => App\Models\Siswa::class, // pakai model Siswa
+            'model' => App\Models\siswa::class, // pakai model Siswa
         ],
 
        'parents' => [
         'driver' => 'eloquent',
-        'model' => App\Models\OrangTua::class,// atau App\Models\Parent::class kalau kamu buat model khusus
+        'model' => App\Models\orang_tua::class,// atau App\Models\Parent::class kalau kamu buat model khusus
     ],
 
     'walikelas' => [

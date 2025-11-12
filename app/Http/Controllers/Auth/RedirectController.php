@@ -13,8 +13,8 @@ class RedirectController extends Controller
         return redirect()->route('siswa.dashboard');
     }
 
-    if (Auth::guard('orangtua')->check()) {
-        return redirect()->route('orangtua.dashboard');
+    if (Auth::guard('parent')->check()) {
+        return redirect()->route('parent.dashboard');
     }
 
     if (Auth::guard('walikelas')->check()) {

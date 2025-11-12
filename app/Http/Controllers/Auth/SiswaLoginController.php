@@ -8,46 +8,32 @@ use Illuminate\Support\Facades\Auth;
 
 class SiswaLoginController extends Controller
 {
-    /**
-     * Tampilkan halaman login siswa
-     */
-    public function showLoginForm()
-    {
-        return view('auth.siswa-login');
-    }
-
-    /**
-     * Proses login siswa
-     */
     public function login(Request $request)
     {
-        // Validasi input
         $request->validate([
-            'email' => 'required|email|exists:siswas,email',
+            'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
 
-        // Login dengan guard 'siswa'
-        if (Auth::guard('siswa')->attempt($request->only('email', 'password'), $request->filled('remember'))) {
+        // Gunakan guard siswa
+        if (Auth::guard('siswa')->attempt($request->only('email', 'password'))) {
             $request->session()->regenerate();
+
+            // Redirect ke dashboard siswa
             return redirect()->route('siswa.dashboard');
         }
 
-        // Jika gagal login
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ]);
+        return back()->withErrors(['error' => 'Email atau password salah.']);
     }
 
-    /**
-     * Logout pengguna
-     */
     public function logout(Request $request)
     {
         Auth::guard('siswa')->logout();
+
+        // Pastikan session bersih
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('siswa.login')->with('status', 'Anda telah logout.');
+        return redirect()->route('welcome')->with('status', 'Anda berhasil logout.');
     }
 }

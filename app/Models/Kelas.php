@@ -8,7 +8,13 @@ use Illuminate\Database\Eloquent\Model;
 class Kelas extends Model
 {
     use HasFactory;
+    protected $fillable = ['nama', 'wali_kelas_id'];
 
-    protected $table = 'kelas'; // pastikan nama tabelnya benar
-    protected $fillable = ['nama_kelas']; // sesuaikan kolom yang kamu punya
+    public function waliKelas() {
+        return $this->belongsTo(WaliKelas::class);
+    }
+
+    public function siswa() {
+        return $this->hasMany(Siswa::class);
+    }
 }

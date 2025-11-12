@@ -1,51 +1,38 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\OrangTua;
 
 class ParentLoginController extends Controller
 {
-    public function showLoginForm()
-    {
-        return view('auth.login');
-    }
-
     public function login(Request $request)
     {
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'email' => 'required|string|email',
+            'password' => 'required|string',
         ]);
 
-        // ✅ Cek dulu apakah email terdaftar
-        $parent = OrangTua::where('email', $request->email)->first();
-        if (!$parent) {
-            return back()
-                ->withErrors(['email' => 'Email tidak ditemukan'])
-                ->withInput($request->only('email'));
+        // Gunakan guard parent
+        if (Auth::guard('parent')->attempt($request->only('email', 'password'))) {
+            $request->session()->regenerate();
+
+            // Redirect ke dashboard parent
+            return redirect()->route('parent.dashboard');
         }
 
-        // ✅ Kalau email benar, cek password
-        if (!Auth::guard('parent')->attempt($request->only('email', 'password'))) {
-            return back()
-                ->withErrors(['password' => 'Password salah'])
-                ->withInput($request->only('email'));
-        }
-
-        // ✅ Login sukses
-        $request->session()->regenerate();
-        return redirect()->route('parent.dashboard');
+        return back()->withErrors(['error' => 'Email atau password salah.']);
     }
 
     public function logout(Request $request)
     {
         Auth::guard('parent')->logout();
+
+        // Pastikan session bersih
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect()->route('parent.login');
+
+        return redirect()->route('welcome')->with('status', 'Anda berhasil logout.');
     }
 }

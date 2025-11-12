@@ -11,15 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orangtuas', function (Blueprint $table) {
+        Schema::create('siswas', function (Blueprint $table) {
             $table->id();
+            
             $table->string('nama');
+            $table->string('nis')->unique();
+            $table->enum('jenis_kelamin', ['L', 'P']);
             $table->string('email')->unique();
             $table->string('password');
-            $table->string('nis_anak')->nullable();
+            $table->foreignId('kelas_id')->nullable()->constrained('kelas')->nullOnDelete();
+            $table->foreignId('orang_tua_id')->nullable()->constrained('orang_tuas')->nullOnDelete();
             $table->timestamps();
         });
-
     }
 
     /**
@@ -27,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orangtuas');
+        Schema::dropIfExists('siswas');
     }
 };
