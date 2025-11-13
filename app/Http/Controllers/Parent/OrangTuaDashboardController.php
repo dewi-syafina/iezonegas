@@ -54,7 +54,7 @@ class OrangTuaDashboardController extends Controller
             'tanggal' => 'required|date',
             'jenis_izin' => 'required|string',
             'alasan' => 'required|string',
-            'bukti' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'bukti' => 'required|file|mimes:jpg,jpeg,png,pdf|max:2048',
         ]);
 
         $parent = Auth::guard('parent')->user();
@@ -75,7 +75,7 @@ class OrangTuaDashboardController extends Controller
 
         // Upload bukti jika ada
         if ($request->hasFile('bukti')) {
-            $izin->bukti_foto = $request->file('bukti')->store('izin', 'public');
+            $izin->bukti = $request->file('bukti')->store('izin', 'public');
         }
 
         $izin->status = 'pending';

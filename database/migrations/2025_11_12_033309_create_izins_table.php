@@ -29,7 +29,7 @@ return new class extends Migration
     $table->date('tanggal');
     $table->enum('jenis_izin', ['izin', 'sakit']);
     $table->text('alasan');
-    $table->string('bukti')->nullable();
+    $table->string('bukti');
     $table->enum('status', ['pending', 'diizinkan', 'tidak diizinkan'])->default('pending');
     $table->timestamps();
 });

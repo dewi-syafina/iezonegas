@@ -4,7 +4,8 @@
 
 @section('content')
 {{-- 🏠 Hero Section --}}
-<section class="relative flex flex-col items-center justify-center text-center min-h-screen px-6 pt-32 md:pt-36 lg:pt-40 overflow-hidden">
+<div class=>
+<section class="relative flex flex-col items-center justify-center text-center min-h-screen px-6  overflow-hidden">
     <div class="absolute inset-0 bg-gradient-to-br from-purple-50/50 to-green-50/50"></div>
 
     <h1 data-aos="fade-up" class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight text-purple-800 relative z-10">
@@ -28,24 +29,11 @@
             }
         @endphp
 
-        @if ($isLoggedIn)
-            <a href="{{ url('/dashboard') }}" 
-               class="bg-purple-400 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold shadow-lg hover:bg-purple-500 transition transform hover:scale-105">
-               Buka Dashboard
-            </a>
-        @else
-            <!-- Tombol dropdown login -->
-            <div class="relative inline-block text-left">
-                <button type="button" 
+            <a href="{{ route('login') }}" 
                         class="bg-orange-400 text-white px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold shadow-lg hover:bg-orange-500 transition transform hover:scale-105 focus:outline-none"
-                        id="menu-button"
-                        onclick="document.getElementById('dropdown-login').classList.toggle('hidden')">
-                    Masuk Sekarang
-                </button>
-
-                
-            </div>
-        @endif
+>               Masuk Sekarang
+            </a>
+        
 
         <a href="#fitur" class="border-2 border-purple-400 text-purple-700 px-6 sm:px-8 py-2 sm:py-3 rounded-full font-semibold hover:bg-purple-50 transition transform hover:scale-105">
             Pelajari Lebih Lanjut
@@ -83,25 +71,8 @@
     </div>
 </section>
 
-{{-- 📊 Statistik --}}
-<section class="py-16 bg-gradient-to-r from-orange-100 to-purple-100 text-purple-800 text-center">
-    <h2 data-aos="fade-up" class="text-2xl sm:text-3xl font-bold mb-8">Statistik Penggunaan</h2>
+</div>
 
-    <div data-aos="zoom-in" class="flex flex-wrap justify-center gap-6 sm:gap-10">
-        <div class="bg-white/50 p-6 rounded-2xl shadow-lg hover:scale-105 transition transform w-40 sm:w-48">
-            <div class="text-4xl sm:text-5xl font-extrabold text-orange-600">250+</div>
-            <p class="text-sm sm:text-base opacity-80">Siswa Terdaftar</p>
-        </div>
-        <div class="bg-white/50 p-6 rounded-2xl shadow-lg hover:scale-105 transition transform w-40 sm:w-48">
-            <div class="text-4xl sm:text-5xl font-extrabold text-green-600">120+</div>
-            <p class="text-sm sm:text-base opacity-80">Izin Terkirim</p>
-        </div>
-        <div class="bg-white/50 p-6 rounded-2xl shadow-lg hover:scale-105 transition transform w-40 sm:w-48">
-            <div class="text-4xl sm:text-5xl font-extrabold text-purple-600">10+</div>
-            <p class="text-sm sm:text-base opacity-80">Guru Terhubung</p>
-        </div>
-    </div>
-</section>
 
 <script>
     // Tutup dropdown jika klik di luar

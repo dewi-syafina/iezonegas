@@ -158,94 +158,105 @@
     <div class="decorative-circle circle-1"></div>
     <div class="decorative-circle circle-2"></div>
 
-   <!-- Kartu Login -->
-<div class="login-card animate-fadeIn" data-aos="zoom-in">
-    <div class="text-center mb-6">
-        <div class="w-12 h-12 bg-gradient-to-r from-purple-400 to-green-400 rounded-full flex items-center justify-center text-white font-bold shadow-lg animate-float mx-auto mb-3">
-            🔐
+    <!-- Kartu Login -->
+    <div class="login-card animate-fadeIn" data-aos="zoom-in">
+        <!-- 🔙 Tombol Kembali -->
+        <div class="mb-4">
+            <a href="{{ url('/') }}" 
+               class="inline-flex items-center text-purple-600 font-medium hover:text-purple-800 transition-all duration-300 hover:translate-x-[-3px]">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M15 19l-7-7 7-7" />
+                </svg>
+                Kembali
+            </a>
         </div>
-        <h1 class="text-3xl font-extrabold">Login IEZ-ONE</h1>
-        <p class="text-gray-500 text-sm mt-2">Silakan login sesuai peran Anda dengan sentuhan pastel yang menyenangkan</p>
+
+        <div class="text-center mb-6">
+            <div class="w-12 h-12 bg-gradient-to-r from-purple-400 to-green-400 rounded-full flex items-center justify-center text-white font-bold shadow-lg animate-float mx-auto mb-3">
+                🔐
+            </div>
+            <h1 class="text-3xl font-extrabold">Login IEZ-ONE</h1>
+            <p class="text-gray-500 text-sm mt-2">Silakan login sesuai peran Anda dengan sentuhan pastel yang menyenangkan</p>
+        </div>
+
+        {{-- Status & Error Messages --}}
+        @if(session('status'))
+            <div class="alert alert-success">{{ session('status') }}</div>
+        @endif
+        @if(session('error'))
+            <div class="alert alert-error">{{ session('error') }}</div>
+        @endif
+        @if($errors->any())
+            <div class="alert alert-error">
+                @foreach($errors->all() as $error)
+                    <p>{{ $error }}</p>
+                @endforeach
+            </div>
+        @endif
+
+        <form method="POST" id="loginForm" action="{{ route('siswa.login.submit') }}">
+            @csrf
+
+            <!-- Pilih Role -->
+            <div class="mb-4 relative">
+                <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Login Sebagai</label>
+                <div class="flex items-center border border-gray-300 rounded-lg bg-white px-3">
+                    <svg class="w-5 h-5 text-gray-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    <select name="role" id="role" class="w-full bg-transparent focus:outline-none py-2" required>
+                        <option value="">-- Pilih Peran --</option>
+                        <option value="siswa">👨‍🎓 Siswa</option>
+                        <option value="orangtua">👨‍👩‍👧 Orang Tua</option>
+                        <option value="walikelas">🧑‍🏫 Wali Kelas</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Email -->
+            <div class="mb-4 relative">
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <div class="flex items-center border border-gray-300 rounded-lg bg-white px-3">
+                    <svg class="w-5 h-5 text-gray-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
+                    </svg>
+                    <input id="email" type="email" name="email" placeholder="Masukkan email"
+                        value="{{ old('email') }}" class="w-full bg-transparent focus:outline-none py-2" required>
+                </div>
+                @error('email') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <!-- Password -->
+            <div class="mb-4 relative">
+                <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <div class="flex items-center border border-gray-300 rounded-lg bg-white px-3">
+                    <svg class="w-5 h-5 text-gray-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                    <input id="password" type="password" name="password" placeholder="Masukkan password"
+                        class="w-full bg-transparent focus:outline-none py-2" required>
+                </div>
+                @error('password') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+            </div>
+
+            <button type="submit"
+                class="w-full bg-gradient-to-r from-purple-500 to-green-400 text-white font-semibold py-2 rounded-lg hover:opacity-90 transition">
+                Login
+            </button>
+        </form>
+
+        <p class="text-center text-gray-600 text-sm mt-6">
+            Belum punya akun?
+            <a href="{{ route('register') }}"
+                class="text-purple-600 font-semibold hover:text-purple-800 transition hover:underline">Daftar Sekarang</a>
+        </p>
     </div>
-
-    {{-- Status & Error Messages --}}
-    @if(session('status'))
-        <div class="alert alert-success">{{ session('status') }}</div>
-    @endif
-    @if(session('error'))
-        <div class="alert alert-error">{{ session('error') }}</div>
-    @endif
-    @if($errors->any())
-        <div class="alert alert-error">
-            @foreach($errors->all() as $error)
-                <p>{{ $error }}</p>
-            @endforeach
-        </div>
-    @endif
-
-    <form method="POST" id="loginForm" action="{{ route('siswa.login.submit') }}">
-        @csrf
-
-        <!-- Pilih Role -->
-        <div class="mb-4 relative">
-            <label for="role" class="block text-sm font-medium text-gray-700 mb-1">Login Sebagai</label>
-            <div class="flex items-center border border-gray-300 rounded-lg bg-white px-3">
-                <svg class="w-5 h-5 text-gray-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-                <select name="role" id="role" class="w-full bg-transparent focus:outline-none py-2" required>
-                    <option value="">-- Pilih Peran --</option>
-                    <option value="siswa">👨‍🎓 Siswa</option>
-                    <option value="orangtua">👨‍👩‍👧 Orang Tua</option>
-                    <option value="walikelas">🧑‍🏫 Wali Kelas</option>
-                </select>
-            </div>
-        </div>
-
-        <!-- Email -->
-        <div class="mb-4 relative">
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <div class="flex items-center border border-gray-300 rounded-lg bg-white px-3">
-                <svg class="w-5 h-5 text-gray-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                    stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                </svg>
-                <input id="email" type="email" name="email" placeholder="Masukkan email"
-                    value="{{ old('email') }}" class="w-full bg-transparent focus:outline-none py-2" required>
-            </div>
-            @error('email') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-        </div>
-
-        <!-- Password -->
-        <div class="mb-4 relative">
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-            <div class="flex items-center border border-gray-300 rounded-lg bg-white px-3">
-                <svg class="w-5 h-5 text-gray-400 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <input id="password" type="password" name="password" placeholder="Masukkan password"
-                    class="w-full bg-transparent focus:outline-none py-2" required>
-            </div>
-            @error('password') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-        </div>
-
-        <button type="submit"
-            class="w-full bg-gradient-to-r from-purple-500 to-green-400 text-white font-semibold py-2 rounded-lg hover:opacity-90 transition">
-            Login
-        </button>
-    </form>
-
-    <p class="text-center text-gray-600 text-sm mt-6">
-        Belum punya akun?
-        <a href="{{ route('register') }}"
-            class="text-purple-600 font-semibold hover:text-purple-800 transition hover:underline">Daftar Sekarang</a>
-    </p>
-</div>
-
 
     <script>
         const form = document.getElementById('loginForm');
@@ -262,4 +273,5 @@
         });
     </script>
 </body>
+
 </html>

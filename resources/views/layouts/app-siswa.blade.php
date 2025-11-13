@@ -94,7 +94,7 @@
 
             <!-- Navigasi -->
             <div class="flex flex-wrap gap-2 justify-end items-center">
-                <a href="{{ url('/') }}" class="nav-link bg-white/70 text-purple-700 hover:bg-white shadow-sm hover:shadow-md">
+                <a href="{{ route('siswa.dashboard') }}" class="nav-link bg-white/70 text-purple-700 hover:bg-white shadow-sm hover:shadow-md">
                     🏠 Home
                 </a>
 
@@ -122,15 +122,9 @@
     </main>
 
     <!-- 🔹 Footer -->
-    <footer class="bg-gradient-to-r from-purple-50 to-green-50 text-purple-700 text-center py-4 border-t border-purple-200 shadow-inner">
-        <p class="text-sm sm:text-base font-medium">
-            Sistem Izin Sekolah Berbasis Web
-        </p>
-        <p class="text-xs sm:text-sm text-gray-500 mt-1">
-            Dikembangkan oleh murid SMK N 1 Sayung, kelas 12 PPLG 2
-        </p>
+    <footer class="bg-gradient-to-r from-orange-100 to-purple-100 text-purple-800 text-center py-4 mt-auto shadow-inner border-t border-purple-200">
+        <p class="text-xs sm:text-sm opacity-90">© 2025 IEZ-ONE. All rights reserved. | Dibuat dengan ❤️ untuk Pendidikan</p>
     </footer>
-
 </div>
 </body>
 </html>

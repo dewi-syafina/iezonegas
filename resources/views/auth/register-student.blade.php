@@ -87,10 +87,35 @@
         .footer-text a:hover {
             text-decoration: underline;
         }
+        /* Tombol kembali gaya login */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            color: #7B68EE;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+        .back-btn svg {
+            margin-right: 0.5rem;
+        }
+        .back-btn:hover {
+            color: #4B3BB5;
+            transform: translateX(-3px);
+        }
     </style>
 </head>
 <body>
     <div class="register-card" data-aos="zoom-in">
+        <!-- 🔙 Tombol Kembali -->
+        <a href="{{ url('/') }}" class="back-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Kembali
+        </a>
+
         <div class="text-center mb-6">
             <h1 class="text-3xl mb-2">Registrasi Siswa</h1>
             <p class="text-gray-500 text-sm">Daftarkan akun siswa Anda di IEZ-ONE</p>
